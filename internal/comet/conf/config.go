@@ -9,6 +9,7 @@ type Rpc struct {
 }
 
 type LogicAddr string
+type MasterAddr string
 
 type Comet struct {
 	Comet_id     string

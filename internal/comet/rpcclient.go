@@ -6,16 +6,28 @@ import (
 	"net/rpc"
 )
 
-func (comet *Comet) InitRPCClient(conf conf.LogicAddr) error {
+func (comet *Comet) InitLogic(conf conf.LogicAddr) error {
 	client, err := rpc.DialHTTP("tcp", string(conf))
 	comet.logicserver = client
-	log.Print("InitRPCClient...")
+	log.Print("InitLogic...")
 	if err != nil {
 		log.Fatal("link to logic error :", err)
 		return err
 	}
 	return nil
 }
+
+func (comet *Comet) InitMaster(conf conf.MasterAddr) error {
+	client, err := rpc.DialHTTP("tcp", string(conf))
+	comet.masterserver = client
+	log.Print("InitMaster...")
+	if err != nil {
+		log.Fatal("link to logic error :", err)
+		return err
+	}
+	return nil
+}
+
 func (comet *Comet) getroomid(id string, reply *Reply) error {
 
 	err := comet.logicserver.Call("Logic.CheckToken", id, reply)

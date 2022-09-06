@@ -43,7 +43,12 @@ func (logic *Logic) HTTPHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	//kafka push msg
-	err = logic.pushkafka(msg)
+	if msg.Operation == "0" {
+
+		err = logic.pushkafka(msg, "broadcast")
+	} else {
+		err = logic.pushkafka(msg, "geim")
+	}
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
 		return

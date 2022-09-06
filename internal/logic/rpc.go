@@ -18,6 +18,7 @@ func InitRPC(conf *conf.Rpc, object *Logic) {
 	}
 	log.Print("RPC listening:", conf.Port)
 	http.Serve(l, nil)
+	defer l.Close()
 }
 
 type Reply struct {

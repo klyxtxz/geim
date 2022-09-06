@@ -23,12 +23,13 @@ func Initkafka(conf string) *kafka {
 		log.Fatalln("producer closed, err:", err)
 		return nil
 	}
+	log.Print("connect kafka success:", conf)
 	return &kafka{client: client}
 }
-func (ka *kafka) push(req httpreq) error {
+func (ka *kafka) push(req httpreq, topic string) error {
 
 	msg := &sarama.ProducerMessage{}
-	msg.Topic = "geim"
+	msg.Topic = topic
 	value, err := json.Marshal(req)
 	if err != nil {
 		log.Printf("marshal err")

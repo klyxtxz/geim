@@ -20,7 +20,7 @@ func Initredis(conf string) (redisObj *Redis) {
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
-
+	log.Print("connect redis success:", conf)
 	return re
 }
 

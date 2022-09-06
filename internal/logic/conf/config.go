@@ -10,3 +10,12 @@ type LogicConf struct {
 	Kafka string
 	Redis string
 }
+type RoomKafka struct {
+	Addr  string
+	Topic string
+	Group string
+}
+type BroadKafka struct {
+	Addr  string
+	Topic string
+}

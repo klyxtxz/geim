@@ -10,8 +10,8 @@ type Logic struct {
 func (logic *Logic) putredis(id, room string) error {
 	return logic.redis.put(id, id, room)
 }
-func (logic *Logic) pushkafka(req httpreq) error {
-	return logic.kafka.push(req)
+func (logic *Logic) pushkafka(req httpreq, topic string) error {
+	return logic.kafka.push(req, topic)
 
 }
 

@@ -1,6 +1,8 @@
 package comet
 
-import "log"
+import (
+	"log"
+)
 
 type room struct {
 	room_id      string
@@ -14,15 +16,24 @@ func (comet *Comet) newroom(roomid string) {
 	rm.channel_size = 0
 	rm.channelmap = make(map[string]*channel)
 	comet.rooms[roomid] = rm
+	
 }
 
-func (rm *room) push(msg Msg) {
-	rm.channelmap[msg.Target].conn.WriteMessage(1, msg.Content)
-	log.Printf("push to %s", msg.Target)
-}
-func (rm *room) pushall(msg Msg) {
-	for _, ch := range rm.channelmap {
-		ch.conn.WriteMessage(1, msg.Content)
+func (rm *room) push(msg, target string) {
+	err := rm.channelmap[target].conn.WriteMessage(1, []byte(msg))
+	if err != nil {
+		log.Printf("push to %s error:%v\n", target, err)
+		return
 	}
-	log.Printf("pushroom to %s", msg.Target)
+	log.Printf("push to %s", target)
+}
+func (rm *room) pushall(msg, target string) {
+	for chid, ch := range rm.channelmap {
+		err := ch.conn.WriteMessage(1, []byte(msg))
+		if err != nil {
+			log.Printf("push to %s error:%v\n", chid, err)
+			continue
+		}
+	}
+	log.Printf("pushroom to %s", target)
 }

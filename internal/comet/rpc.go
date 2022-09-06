@@ -1,7 +1,6 @@
 package comet
 
 import (
-	"errors"
 	"geim/internal/comet/conf"
 	"log"
 	"net"
@@ -9,13 +8,6 @@ import (
 	"net/rpc"
 	"strconv"
 )
-
-type Msg struct {
-	CallerId  string
-	Operation int
-	Target    string
-	Content   []byte
-}
 
 func InitRPCServer(conf *conf.Rpc, object *Comet) {
 	rpc.Register(object)
@@ -26,35 +18,39 @@ func InitRPCServer(conf *conf.Rpc, object *Comet) {
 	}
 	log.Print("RPC listening:", conf.Port)
 	http.Serve(l, nil)
+	defer l.Close()
 }
 
-func (comet *Comet) PushId(msg Msg, reply *string) error {
-	for _, room := range comet.rooms {
-
-		if _, ok := room.channelmap[msg.Target]; ok {
-			room.push(msg)
-			rep := "success"
-			reply = &rep
-			return nil
-		}
-	}
-
-	return errors.New("404 Not found")
+type Pushid struct {
+	Target  string
+	Room    string
+	Content string
 }
 
-func (comet *Comet) PushRoom(msg Msg, reply *string) error {
-	comet.rooms[msg.Target].pushall(msg)
-	rep := "success"
-	reply = &rep
+func (comet *Comet) PushId(msg Pushid, reply *string) error {
+	comet.rooms[msg.Room].push(msg.Content, msg.Target)
+
+	return nil
+}
+
+type Pushroom struct {
+	Target  string
+	Content string
+}
+
+func (comet *Comet) PushRoom(msg Pushroom, reply *string) error {
+	comet.rooms[msg.Target].pushall(msg.Content, msg.Target)
+	*reply = "success"
+
 	return nil
 
 }
 
-func (comet *Comet) PushAll(msg Msg, reply *string) error {
-	for _, rm := range comet.rooms {
-		rm.pushall(msg)
+func (comet *Comet) PushAll(msg string, reply *string) error {
+	for rmid, rm := range comet.rooms {
+		rm.pushall(msg, rmid)
 	}
-	rep := "success"
-	reply = &rep
+	*reply = "success"
+
 	return nil
 }
